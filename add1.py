@@ -63,13 +63,6 @@ if st.button("🔍 Get Answer"):
         # Display answer
         st.success(f"🟢 **Answer:** {predicted_answer}")
 
-!pip install streamlit pandas scikit-learn
-!pip install speech_recognition pyttsx3
-
-pip install streamlit pyttsx3 SpeechRecognition pyaudio
-
-!pip install SpeechRecognition
-!pip install pyttsx3
 
 import speech_recognition as sr
 import pyttsx3
