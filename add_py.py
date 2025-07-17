@@ -9,7 +9,7 @@ import os
 VOCAB_SIZE = 10000
 MAXLEN = 200
 
-MODEL_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/model.h5"  # ⬅️ Replace this
+MODEL_URL = "https://github.com/sakthivel-136/add/blob/main/model.h5"  # ⬅️ Replace this
 
 # Download model from GitHub if not present
 if not os.path.exists("model.h5"):
