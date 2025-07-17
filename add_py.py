@@ -2,22 +2,33 @@ import streamlit as st
 import tensorflow as tf
 from tensorflow.keras.datasets import imdb
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import requests
+import os
 
 # Constants
 VOCAB_SIZE = 10000
 MAXLEN = 200
 
+MODEL_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/model.h5"  # ⬅️ Replace this
+
+# Download model from GitHub if not present
+if not os.path.exists("model.h5"):
+    with st.spinner("📦 Downloading model..."):
+        r = requests.get(MODEL_URL)
+        with open("model.h5", "wb") as f:
+            f.write(r.content)
+        st.success("✅ Model downloaded!")
+
+# Load model
+model = tf.keras.models.load_model("model.h5")
+
 # Load IMDB word index
 word_index = imdb.get_word_index()
-reverse_word_index = {value: key for key, value in word_index.items()}
 
-# Load trained model
-model = tf.keras.models.load_model('model.h5')
-
-# Preprocess function
+# Preprocess text
 def review_to_sequence(review):
     tokens = review.lower().split()
-    sequence = [word_index.get(word, 2) for word in tokens]  # 2 = unknown
+    sequence = [word_index.get(word, 2) for word in tokens]  # 2 is for unknown
     return pad_sequences([sequence], maxlen=MAXLEN)
 
 def predict_sentiment(review):
@@ -26,20 +37,20 @@ def predict_sentiment(review):
     sentiment = "🟢 Positive 😀" if prediction > 0.5 else "🔴 Negative 😞"
     return f"{sentiment} ({prediction:.2f})"
 
-# ───────────────────────────────────────────────
+# ───────────────────────────────────────
 # Streamlit UI
-st.set_page_config(page_title="Movie Sentiment Classifier", page_icon="🎬")
+st.set_page_config(page_title="Sentiment Classifier", page_icon="🎬")
 st.title("🎬 Movie Review Sentiment Classifier")
-st.subheader("🔍 Enter a movie review below:")
+st.markdown("🔍 Enter a movie review and check if it's Positive or Negative.")
 
-input_review = st.text_area("✏️ Your Review", height=150)
+review = st.text_area("✏️ Your Movie Review")
 
-if st.button("Analyze Sentiment"):
-    if input_review.strip() == "":
-        st.warning("Please enter a review to analyze.")
+if st.button("🔎 Predict Sentiment"):
+    if not review.strip():
+        st.warning("⚠️ Please enter a valid review.")
     else:
-        result = predict_sentiment(input_review)
-        st.success(result)
+        output = predict_sentiment(review)
+        st.success(output)
 
 st.markdown("---")
-st.markdown("✅ Built using LSTM | Trained on IMDB Dataset")
+st.caption("📊 Powered by LSTM • IMDB dataset • Deployed with Streamlit")
